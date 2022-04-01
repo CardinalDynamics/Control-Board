@@ -19,6 +19,8 @@ import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.wpilibj.PneumaticsControlModule;
+import edu.wpi.first.networktables.*;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -49,9 +51,11 @@ public class Robot extends TimedRobot {
    * 1 Double Solenoid, used for pneumatic pistons.
    * 1 Compressor, used to access the onboard compressor.
    */
+  private final PneumaticsControlModule pneumatics = new PneumaticsControlModule(0);
+
   private final DoubleSolenoid solenoid = new DoubleSolenoid(PCM, 0, 0);
 
-  private final Compressor compressor = new Compressor(PCM);
+  private final Compressor compressor = new Compressor(0, PCM);
 
   // Construct the Cross The Road Electronics Power Distributon Panel for access
   // within Driver Station.
@@ -84,7 +88,10 @@ public class Robot extends TimedRobot {
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
     compressor.enableDigital();
-    CameraServer.startAutomaticCapture();
+    CameraServer.startAutomaticCapture("Camera 1", 0);
+    CameraServer.startAutomaticCapture("Camera 2", 1);
+    pneumatics.enableCompressorDigital();
+    NetworkTableInstance.getDefault().getTable("limelight").getEntry("camMode").setNumber(1);
   }
 
   /**
